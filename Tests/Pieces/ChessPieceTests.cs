@@ -36,7 +36,7 @@ namespace ChessLogic.Tests
         {
             var board = new ChessBoard();
 
-            Assert.AreEqual(0, board.blackPices.First(x => x is Quinn).GetValidMoves(board).ToList().Count, "Fail");
+            Assert.AreEqual(0, board.blackPices.First(x => x is Queen).GetValidMoves(board).ToList().Count, "Fail");
         }
         [TestMethod()]
         public void GetValidMovesPawnTest()

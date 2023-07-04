@@ -18,10 +18,24 @@ namespace ChessLogic
         };
 
 
+        /// <summary>
+        /// Gets the valid moves.
+        /// </summary>
+        /// <param name="board">The board.</param>
+        /// <returns>A list of Moves.</returns>
         public override IEnumerable<Move> GetValidMoves(ChessBoard board)
         {
-            var result = ChessMoveUtilities.GetMoves(board,this,7,MoveTemplates);
-            return result;
+            try
+            {
+                var result = board.moveUtilities.GetMoves(board, this, 7, MoveTemplates);
+                return result;
+            }
+            catch(Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+
         }
 
         public override int[][] GetMoveTemplates()

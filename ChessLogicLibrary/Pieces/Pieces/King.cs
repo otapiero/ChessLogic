@@ -41,11 +41,20 @@ namespace ChessLogic
         /// <returns>A list of Mooves.</returns>
         public override IEnumerable<Move> GetValidMoves(ChessBoard board)
         {
-            List<Move> result = ChessMoveUtilities.GetMoves(board,this,1,MoveTemplates) as List<Move>;
-            // add promotiens moves
+            try
+            {
+                List<Move> result = board.moveUtilities.GetMoves(board, this, 1, MoveTemplates) as List<Move>;
+                // add promotiens moves
 
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+            
 
         }
 

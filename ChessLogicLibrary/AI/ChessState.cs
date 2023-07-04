@@ -1,5 +1,6 @@
 ﻿using AIAlgorithm;
 using ChessLogic;
+using ChessLogicLibrary.Evaluetion;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -41,16 +42,16 @@ namespace ChessLogicLibrary
 
         public int Value()
         {
-            var r = new Random();
-            return r.Next(1000);
+
+            return new BoardEvaluetion(board).Evaluete();
         }
 
         public int DepthCalcul()
         {
-            if (move.isCapture || move.isCheck) 
+          /*  if (move.isCapture || move.isCheck) 
             {
                 return 1;
-            }
+            }*/
             return -1;
         }
     }

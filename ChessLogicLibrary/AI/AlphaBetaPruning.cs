@@ -15,6 +15,7 @@ namespace AIAlgorithm
     {
         int MAX = int.MaxValue;
         int MIN = int.MinValue;
+    
         /// <summary>
         /// Minis the max.
         /// </summary>
@@ -26,13 +27,15 @@ namespace AIAlgorithm
         /// <returns>A          (T,int) .</returns>
         (T,int) MiniMax(T position, int depth, int alpha, int beta, bool maximizingPlayer)
         {
+            
             if (position.GameOver())
                 return (position, position.Value());
             if (depth <= 0)
             {
                 int newDepth = position.DepthCalcul();
                 if (newDepth > 0)
-                    MiniMax(position, newDepth, alpha, beta, maximizingPlayer);
+                  return  MiniMax(position, newDepth, alpha, beta, maximizingPlayer);
+                return (position, position.Value());
 
             }
             if (maximizingPlayer)
@@ -41,6 +44,7 @@ namespace AIAlgorithm
                 T next= null;
                 foreach( var child in position.Childs()) 
                 {
+                 
                     next = (T)child;
                     var eval = MiniMax((T)child, depth - 1, alpha, beta, false).Item2;
                     maxEval = Math.Max(maxEval, eval);
@@ -48,7 +52,7 @@ namespace AIAlgorithm
                     if (beta <=alpha)
                         break;
                 }
-
+                
                 return (next, maxEval); 
             }
             else
@@ -78,7 +82,7 @@ namespace AIAlgorithm
         public void BestNext(T position, int depth,  bool maximizingPlayer,out T next ) 
         {
             var childs = position.Childs();
-            next = (childs is not null) ? (T)childs.MaxBy(x => MiniMax((T)x, depth, MIN, MAX, maximizingPlayer)) : null;
+            next = (childs is not null) ? (T)childs.MaxBy(x => MiniMax((T)x, depth, MIN, MAX, maximizingPlayer).Item2) : null;
         }
     }
 }

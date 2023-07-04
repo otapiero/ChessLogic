@@ -12,7 +12,7 @@ namespace ChessLogic
     public sealed class ChessBoard
     {
         // Initiate a private new ChessPiece array
-        public BoardLocation[,] cells = new BoardLocation[8, 8];
+        private BoardLocation[,] cells = new BoardLocation[8, 8];
         public List<ChessPiece> whitePices { get; set; }
         public List<ChessPiece> blackPices { get; set; }
         private ChessPiece whiteKing;
@@ -24,17 +24,36 @@ namespace ChessLogic
         public List<ChessPiece>[] Pices { get; set; }
 
         public bool GameOver { get; set; } = false;
+
+        PieceManager pieceManager;
+        public ChessMoveUtilities moveUtilities;
         public ChessBoard()
         {
             // callback the initiation process
+            pieceManager = new PieceManager();
+            moveUtilities = new ChessMoveUtilities();
             Initiate();
         }
         private ChessBoard(ChessBoard board)
         {
             // callback the initiation process
+            pieceManager = board.pieceManager;
+            moveUtilities = board.moveUtilities;
             InitiateCopy(board);
         }
-
+        public BoardLocation this[int row, int column]
+        {
+            // This indexer allows you to access the chess pieces on the board by their
+            // row and column coordinates, using array-like syntax.
+            // For example, board[1,2] returns the ChessPiece object at row 1, column 2.
+            get
+            {
+                if (row >= SIZE || column >= SIZE)
+                    throw new ArgumentOutOfRangeException("index out of board size");
+               return this.cells[row,column]; 
+            }
+            set { this.cells[row,column] = value; }
+        }
         public ChessBoard DeepCopy()
         {
             ChessBoard newBoard = new ChessBoard(this);
@@ -47,13 +66,13 @@ namespace ChessLogic
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    cells[i,j] = new BoardLocation(i,j);
+                    this[i,j] = new BoardLocation(i,j);
                 }
             }
-            whitePices = PieceManager.GenrateChessPieces(ChessPieceColor.White);
-            blackPices = PieceManager.GenrateChessPieces(ChessPieceColor.Black);
-            PieceManager.PlacePices(1,0,whitePices,this);
-            PieceManager.PlacePices(6,7,blackPices,this);
+            whitePices = pieceManager.GenrateChessPieces(ChessPieceColor.White);
+            blackPices = pieceManager.GenrateChessPieces(ChessPieceColor.Black);
+            pieceManager.PlacePices(1,0,whitePices,this);
+            pieceManager.PlacePices(6,7,blackPices,this);
             blackKing = blackPices[11];
             Pices = new[] { whitePices, blackPices };
         }
@@ -63,7 +82,7 @@ namespace ChessLogic
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    cells[i, j] = new BoardLocation(i, j);
+                    this[i, j] = new BoardLocation(i, j);
                 }
             }
             this.blackPices = board.blackPices.ConvertAll(piece => piece.DeepCopy());
@@ -71,13 +90,13 @@ namespace ChessLogic
             for (int i = 0; i < board.blackPices.Count; i++)
             {
                 this.blackPices[i].location =
-                    this.cells[board.blackPices[i].location.Row, board.blackPices[i].location.Column].SetPiece(this.blackPices[i]);
+                    this[board.blackPices[i].location.Row, board.blackPices[i].location.Column].SetPiece(this.blackPices[i]);
                 
             }
             for (int i = 0; i < board.whitePices.Count; i++)
             {
                 this.whitePices[i].location =
-                    this.cells[board.whitePices[i].location.Row, board.whitePices[i].location.Column].SetPiece(this.whitePices[i]);
+                    this[board.whitePices[i].location.Row, board.whitePices[i].location.Column].SetPiece(this.whitePices[i]);
 
             }
             this.blackKing = this.blackPices.First(x => x is King);
@@ -94,7 +113,7 @@ namespace ChessLogic
         // Dummy : To get the open-squares that can accept new ChessPiece 
         public IEnumerable<Move> GetAvailablePositions()
         {
-            if (ChessMoveUtilities.IsTreaten(this, Pices[1 - (int)turnColor].First(x => x is King).location, turnColor))
+            if (moveUtilities.IsTreaten(this, Pices[1 - (int)turnColor].First(x => x is King).location, turnColor))
                 GameOver = true;
 
             IEnumerable<Move> result = new List<Move>();
@@ -119,8 +138,8 @@ namespace ChessLogic
         }
         public ChessBoard ExecuteMove(Move move)
         {
-            var startingLocation = cells[move.startingLocation.Row, move.startingLocation.Column];
-            var endingLocation = cells[move.endingLocation.Row, move.endingLocation.Column];
+            var startingLocation = this[move.startingLocation.Row, move.startingLocation.Column];
+            var endingLocation = this[move.endingLocation.Row, move.endingLocation.Column];
             if (!endingLocation.IsEmpty())
             {
                 if (endingLocation.piece is King)
@@ -135,6 +154,13 @@ namespace ChessLogic
             piece.location = endingLocation.SetPiece(piece);
             turnColor =(ChessPieceColor) ((int) ChessPieceColor.White + ChessPieceColor.Black - turnColor);
             return this;
+        }
+
+        public ChessPiece GetPieceAtSquare(int targetSquare)
+        {
+            int x = targetSquare % 8;
+            var y = targetSquare / 8;
+            return cells[x, y].piece;
         }
     }
 }

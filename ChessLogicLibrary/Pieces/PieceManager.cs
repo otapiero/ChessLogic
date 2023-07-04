@@ -8,7 +8,7 @@ using ChessLogic;
 
 namespace ChessLogic
 {
-    public static class PieceManager
+    public  class PieceManager
     {
 
 
@@ -18,18 +18,18 @@ namespace ChessLogic
         "P","P","P","P", "P","P","P","P",
         "R","N","B","K","Q","B","N","R"
         };
-        static Dictionary<string, Type> pieceLibrary = new Dictionary<string, Type>()
+         Dictionary<string, Type> pieceLibrary = new Dictionary<string, Type>()
         {
             {"P",typeof(Pawn) },
             {"R",typeof(Rook) },
             {"N",typeof(Knight) },
             {"B",typeof(Bishop) },
             {"K",typeof(King) },
-            {"Q",typeof (Quinn) }
+            {"Q",typeof (Queen) }
         };
-
-
-        static public List<ChessPiece> GenrateChessPieces(ChessPieceColor teamColor, string[] pieceOrder = null)
+        
+        // 
+        public List<ChessPiece> GenrateChessPieces(ChessPieceColor teamColor, string[] pieceOrder = null)
         {
             if (pieceOrder == null)
                 pieceOrder = DefaultPieceOrder;
@@ -42,12 +42,12 @@ namespace ChessLogic
             }
             return newList;
         }
-        static public void PlacePices(int pawnRow, int picesRow, List<ChessPiece> pices, ChessBoard board)
+        public void PlacePices(int pawnRow, int picesRow, List<ChessPiece> pices, ChessBoard board)
         {
             for (int i = 0; i < 8; i++)
             {
-                pices[i].location = board.cells[pawnRow, i].SetPiece(pices[i]);
-                pices[i + 8].location = board.cells[picesRow, i].SetPiece(pices[i + 8]);   
+                pices[i].location = board[pawnRow, i].SetPiece(pices[i]);
+                pices[i + 8].location = board[picesRow, i].SetPiece(pices[i + 8]);   
             }
         }
 

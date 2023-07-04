@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace ChessLogic
 {
-    public sealed class Quinn : ChessPiece
+    /// <summary>
+    /// The queen.
+    /// </summary>
+    public sealed class Queen : ChessPiece
     {
 
         
@@ -24,8 +27,17 @@ namespace ChessLogic
 
         public override IEnumerable<Move> GetValidMoves(ChessBoard board)
         {
-            var result=  ChessMoveUtilities.GetMoves(board, this, ChessBoard.SIZE, MoveTemplates);
-            return result;
+            try
+            {
+                var result = board.moveUtilities.GetMoves(board, this, ChessBoard.SIZE, MoveTemplates);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+          
         }
 
         public override int[][] GetMoveTemplates()

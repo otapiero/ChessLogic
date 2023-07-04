@@ -16,8 +16,8 @@ namespace ChessLogic.Tests
             {
                 for (int j = 0; j < ChessBoard.SIZE; j++)
                 {
-                    Assert.AreEqual(chessBoard.cells[i,j].Row, i, $"Error in location ({i},{j})");
-                    Assert.AreEqual(chessBoard.cells[i, j].Column, j, $"Error in location ({i},{j})");
+                    Assert.AreEqual(chessBoard[i,j].Row, i, $"Error in location ({i},{j})");
+                    Assert.AreEqual(chessBoard[i, j].Column, j, $"Error in location ({i},{j})");
                 }
             }
             var whitePices = chessBoard.whitePices;

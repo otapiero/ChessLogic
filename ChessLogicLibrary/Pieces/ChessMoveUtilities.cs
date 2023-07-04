@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChessLogic
 {
-    static public  class ChessMoveUtilities
+    public  class ChessMoveUtilities
     {
-        private readonly static int[][] ChecksMoveTemplates = new int[][]
+        private readonly  int[][] ChecksMoveTemplates = new int[][]
         {
              new [] { 1, -1 },
              new [] { 1, 0 },
@@ -19,9 +19,24 @@ namespace ChessLogic
              new [] { -1, -1 },
               new [] { -1, 0 },
              new [] { -1, 1 },
-        };
 
-        private static bool IsValid(ChessBoard board, BoardLocation currentLocation, int deltaRow, int deltaCol, out BoardLocation location)
+        };
+        private readonly  int[][] ChecksMoveKnhigtTemplates = new int[][]
+        {
+              new[] {1,2},
+            new[] {1,-2},
+            new[] {-1,2},
+            new[] {-1,-2},
+            new[] {2,1},
+            new[] {2,-1},
+            new[] {-2,1},
+            new[] {-2,-1}
+        };
+     
+
+
+    
+        private  bool IsValid(ChessBoard board, BoardLocation currentLocation, int deltaRow, int deltaCol, out BoardLocation location)
         {
             location = null;
             BoardLocation current = currentLocation;
@@ -31,7 +46,7 @@ namespace ChessLogic
             var newCol = current.Column + deltaCol;
             if (!BoardLocation.IsInRange(newCol)) return false;
 
-            location = board.cells[newRow, newCol];
+            location = board[newRow, newCol];
 
             return true;
         }
@@ -43,14 +58,14 @@ namespace ChessLogic
         /// <param name="to">The to.</param>
         /// <param name="direction">The direction.</param>
         /// <returns>A bool.</returns>
-        private static bool EmptyPathForward(ChessBoard board, BoardLocation from, BoardLocation to, int[] direction)
+        private  bool EmptyPathForward(ChessBoard board, BoardLocation from, BoardLocation to, int[] direction)
         {
             if (to.Column != from.Column && to.Row != from.Row)
                 return false;
             int range = to.Column == from.Column ? Math.Abs(from.Column - to.Column) : Math.Abs(from.Row - to.Row);
             for (int i = 1; i < range; i++)
             {
-                if (!board.cells[from.Row + i * direction[0], from.Column + i * direction[0]].IsEmpty())
+                if (!board[from.Row + i * direction[0], from.Column + i * direction[0]].IsEmpty())
                 {
                     return false;
                 }
@@ -65,14 +80,14 @@ namespace ChessLogic
         /// <param name="to">The to.</param>
         /// <param name="direction">The direction.</param>
         /// <returns>A bool.</returns>
-        private static bool EmptyPathDiagonal(ChessBoard board, BoardLocation from, BoardLocation to, int[] direction)
+        private  bool EmptyPathDiagonal(ChessBoard board, BoardLocation from, BoardLocation to, int[] direction)
         {
 
             if (Math.Abs(to.Column - from.Column) != Math.Abs(to.Row - to.Row))
                 return false;
             for (int i = 1; i < Math.Abs(to.Column - from.Column); i++)
             {
-                if (!board.cells[from.Row + i * direction[0], from.Column + i * direction[0]].IsEmpty())
+                if (!board[from.Row + i * direction[0], from.Column + i * direction[0]].IsEmpty())
                 {
                     return false;
                 }
@@ -86,38 +101,47 @@ namespace ChessLogic
         /// <param name="location">The location.</param>
         /// <param name="color">The color.</param>
         /// <returns>A bool.</returns>
-        public static bool IsTreaten(ChessBoard board, BoardLocation location, ChessPieceColor colorTreater)
+        public  bool IsTreaten(ChessBoard board, BoardLocation location, ChessPieceColor colorTreater)
         {
             foreach (var dir in ChecksMoveTemplates)
-            {
-                for (var radius = 1; radius < 8; radius++)
-                {
-                    var deltaX = radius * dir[0];
-                    var deltaY = radius * dir[1];
-                    if (!IsValid(board, location, deltaX, deltaY, out BoardLocation newLocation))
-                    {
-                        break;
-                    }
+             {
+                 for (var radius = 1; radius < 8; radius++)
+                 {
+                     var deltaX = radius * dir[0];
+                     var deltaY = radius * dir[1];
+                     if (!IsValid(board, location, deltaX, deltaY, out BoardLocation newLocation))
+                     {
+                         break;
+                     }
 
-                    if (!newLocation.IsEmpty())
-                    {
-                        if (newLocation.piece.Color != colorTreater && newLocation.piece is not Pawn notPawn &&
+                     if (!newLocation.IsEmpty())
+                     {
+                         if (newLocation.piece.Color != colorTreater && newLocation.piece is not Pawn notPawn &&
                             newLocation.piece.GetMoveTemplates().Contains(dir))
-                            return true;
-                        else
-                            break;
-                    }                  
-                }
-            }
-            foreach (var dir in new Pawn().GetMoveTemplates())
+                             return true;
+                         else
+                             break;
+                     }                  
+                 }
+             }
+            // looke if is treaten by pawn
+             foreach( var dir in new Pawn().GetMoveTemplates())
+             {
+                 if(IsValid(board, location, dir[0], dir[1],out BoardLocation newLocation) && 
+                     (!newLocation.IsEmpty()&&newLocation.piece is Pawn))           
+                 {
+                     return true;  
+                 }
+             }
+            foreach (var dir in new Knight().GetMoveTemplates())
             {
-                if(IsValid(board, location, dir[1], dir[2],out BoardLocation newLocation) && 
-                    (!newLocation.IsEmpty()&&newLocation.piece is Pawn))           
+                if (IsValid(board, location, dir[0], dir[1], out BoardLocation newLocation) &&
+                    (!newLocation.IsEmpty() && newLocation.piece is Knight))
                 {
-                    return true;  
+                    return true;
                 }
             }
-            
+
 
             return false;
         }
@@ -132,7 +156,7 @@ namespace ChessLogic
         /// <param name="range">The range.</param>
         /// <param name="mults">The mults.</param>
         /// <returns>A list of Moves.</returns>
-        public static IEnumerable<Move> GetMoves(ChessBoard board, ChessPiece piece, int range, IEnumerable<int[]> mults)
+        public  IEnumerable<Move> GetMoves(ChessBoard board, ChessPiece piece, int range, IEnumerable<int[]> mults)
         {
             if (board == null) throw new ArgumentNullException("board");
             if (piece == null) throw new ArgumentNullException("piece");

@@ -38,9 +38,18 @@ namespace ChessLogic
 
         public override IEnumerable<Move> GetValidMoves(ChessBoard board)
         {
-            var result = ChessMoveUtilities.GetMoves(board,this,7,MoveTemplates);
-         
-            return result;
+            try
+            {
+                var result = board.moveUtilities.GetMoves(board, this, 7, MoveTemplates);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+          
         }
     }
 }

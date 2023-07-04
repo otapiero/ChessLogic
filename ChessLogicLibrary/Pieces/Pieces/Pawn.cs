@@ -19,58 +19,67 @@ namespace ChessLogic
 
         public override IEnumerable<Move> GetValidMoves(ChessBoard board)
         {
-            int direction = (Color == ChessPieceColor.White) ? 1 : -1;
-            var res = new List<Move>();
-            // if it is not promotion
-            if (BoardLocation.IsInRange(location.Row + 2*direction))
+            try
             {
+                int direction = (Color == ChessPieceColor.White) ? 1 : -1;
+                var res = new List<Move>();
+                // if it is not promotion
+                if (BoardLocation.IsInRange(location.Row + 2 * direction))
+                {
 
-                if (board.cells[location.Row + direction, location.Column].IsEmpty())
-                {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column ]));
-                    if (inOriginalSquer && board.cells[location.Row + 2 * direction, location.Column ].IsEmpty())
-                        res.Add(new Move(this.location, board.cells[location.Row + 2 * direction, location.Column]));
+                    if (board[location.Row + direction, location.Column].IsEmpty())
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column]));
+                        if (inOriginalSquer && board[location.Row + 2 * direction, location.Column].IsEmpty())
+                            res.Add(new Move(this.location, board[location.Row + 2 * direction, location.Column]));
 
+                    }
+                    if (BoardLocation.IsInRange(location.Column + 1) &&
+                        !board[location.Row + direction, location.Column + 1].IsEmpty() &&
+                        board[location.Row + direction, location.Column + 1].piece.Color != Color)
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column + 1]));
+                    }
+                    if (BoardLocation.IsInRange(location.Column - 1) &&
+                        !board[location.Row + direction, location.Column - 1].IsEmpty() &&
+                        board[location.Row + direction, location.Column - 1].piece.Color != Color)
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column - 1]));
+                    }
                 }
-                if (BoardLocation.IsInRange(location.Column + 1) &&
-                    !board.cells[location.Row + direction, location.Column + 1].IsEmpty() &&
-                    board.cells[location.Row + direction, location.Column + 1].piece.Color != Color)
+                else if (BoardLocation.IsInRange(location.Row + direction))
                 {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column + 1]));
+                    if (board[location.Row + direction, location.Column].IsEmpty())
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column]));
+
+                        // Promot()
+                    }
+                    if (BoardLocation.IsInRange(location.Column + 1) &&
+                        !board[location.Row + direction, location.Column + 1].IsEmpty() &&
+                        board[location.Row + direction, location.Column + 1].piece.Color != Color)
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column + 1]));
+                        // Promot()
+
+                    }
+                    if (BoardLocation.IsInRange(location.Column - 1) &&
+                        !board[location.Row + direction, location.Column - 1].IsEmpty() &&
+                        board[location.Row + direction, location.Column - 1].piece.Color != Color)
+                    {
+                        res.Add(new Move(this.location, board[location.Row + direction, location.Column - 1]));
+                        // Promot()
+
+                    }
                 }
-                if (BoardLocation.IsInRange(location.Column - 1) && 
-                    !board.cells[location.Row + direction, location.Column - 1].IsEmpty() &&
-                    board.cells[location.Row + direction, location.Column - 1].piece.Color != Color)
-                {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column - 1]));
-                }
+                return res;
             }
-            else if (BoardLocation.IsInRange(location.Row +  direction))
+            catch (Exception ex)
             {
-                if (board.cells[location.Row + direction, location.Column].IsEmpty())
-                {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column]));
-                  
-                    // Promot()
-                }
-                if (BoardLocation.IsInRange(location.Column + 1) &&
-                    !board.cells[location.Row + direction, location.Column + 1].IsEmpty() &&
-                    board.cells[location.Row + direction, location.Column + 1].piece.Color != Color)
-                {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column + 1]));
-                    // Promot()
-
-                }
-                if (BoardLocation.IsInRange(location.Column - 1) &&
-                    !board.cells[location.Row + direction, location.Column - 1].IsEmpty() &&
-                    board.cells[location.Row + direction, location.Column - 1].piece.Color != Color)
-                {
-                    res.Add(new Move(this.location, board.cells[location.Row + direction, location.Column - 1]));
-                    // Promot()
-
-                }
+                System.Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
             }
-            return res;
+          
         }
     }
 }

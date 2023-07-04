@@ -12,7 +12,7 @@ public class Game
     ChessBoard board;
     AIAlgorithm.AlphaBetaPruning<ChessState> alphaBetaPruning;
 
-    int depht = 5;
+    int depht = 4;
     static Dictionary<Type, string> pieceLibraryWhite = new Dictionary<Type, string>()
     {
         {typeof(Pawn) ,"P"},
@@ -20,7 +20,7 @@ public class Game
         {typeof(Knight),"N" },
         {typeof(Bishop),"B" },
         {typeof(King),"K" },
-        {typeof (Quinn) ,"Q"}
+        {typeof (Queen) ,"Q"}
     };
     static Dictionary<Type, string> pieceLibraryBlack = new Dictionary<Type, string>()
     {
@@ -29,7 +29,7 @@ public class Game
         {typeof(Knight),"n" },
         {typeof(Bishop),"b" },
         {typeof(King),"k" },
-        {typeof (Quinn) ,"q"}
+        {typeof (Queen) ,"q"}
     };
     public Game() 
     {
@@ -71,28 +71,28 @@ public class Game
                 boardString[i, j + 1] = EmptyStr();
 
 
-                if (board.cells[i,j].IsEmpty())
+                if (board[i,j].IsEmpty())
                 {
 
                 }
-                else if(board.cells[i, j].piece.Color == ChessPieceColor.White)
+                else if(board[i, j].piece.Color == ChessPieceColor.White)
                 {
-                    boardString[i, j] = pieceLibraryWhite[board.cells[i, j].piece.GetType()];
-                }
-                else
-                    boardString[i, j] = pieceLibraryBlack[board.cells[i, j].piece.GetType()];
-
-                if (board.cells[i, j+1].IsEmpty())
-                {
-
-
-                }
-                else if (board.cells[i, j + 1].piece.Color == ChessPieceColor.White)
-                {
-                    boardString[i, j + 1] = pieceLibraryWhite[board.cells[i, j + 1].piece.GetType()];
+                    boardString[i, j] = pieceLibraryWhite[board[i, j].piece.GetType()];
                 }
                 else
-                    boardString[i, j + 1] = pieceLibraryBlack[board.cells[i, j + 1].piece.GetType()];
+                    boardString[i, j] = pieceLibraryBlack[board[i, j].piece.GetType()];
+
+                if (board[i, j+1].IsEmpty())
+                {
+
+
+                }
+                else if (board[i, j + 1].piece.Color == ChessPieceColor.White)
+                {
+                    boardString[i, j + 1] = pieceLibraryWhite[board[i, j + 1].piece.GetType()];
+                }
+                else
+                    boardString[i, j + 1] = pieceLibraryBlack[board[i, j + 1].piece.GetType()];
             }
             boardString[i, ChessBoard.SIZE] = "\n";
             count--;
